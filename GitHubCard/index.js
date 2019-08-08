@@ -46,6 +46,100 @@ const followersArray = [];
 
 */
 
+let crdContainment = document.querySelector('.cards');
+
+
+
+axios.get('https://api.github.com/users/NicholasInterest1')
+  .then( (response) => {
+    console.log(response);
+    let nE = cardCreator(response.data);
+    crdContainment.appendChild(nE);
+  })
+  .catch( (err) => {
+    console.log(err);
+  });
+
+
+
+
+axios.get('https://api.github.com/users/NicholasInterest1/followers')
+  .then( (response) => {
+    console.log(response);
+    const followersArray = [];
+    response.data.forEach( (follower) => {
+      followersArray.push(follower.url)
+    });
+    console.log(followersArray);
+    followersArray.forEach( API => {
+      axios.get(API)
+        .then ( (response) => {
+          console.log(response);
+          let nE = cardCreator(response.data);
+          crdContainment.appendChild(nE);
+        });
+    })
+  })
+  .catch( (err) => {
+    console.log(err);
+  });
+ 
+
+
+
+function cardCreator(obj){
+  
+  const newCard = document.createElement('div');
+  newCard.classList.add('card');
+
+  const cardImg = document.createElement('img');
+  cardImg.src = obj.avatar_url;
+
+  const cardInfo = document.createElement('div');
+  cardInfo.classList.add('card-info');
+
+  const cardName = document.createElement('h3');
+  cardName.classList.add('name');
+  cardName.textContent = obj.name;
+
+  const cardUsername = document.createElement('p');
+  cardUsername.classList.add('username');
+  cardUsername.textContent = obj.login;
+
+  const cardUserLocation = document.createElement('p');
+  cardUserLocation.textContent = obj.location;
+
+  const cardUserProfileDiv = document.createElement('p');
+  cardUserProfileDiv.textContent = `Profile: `;
+
+  const cardUserProfileAnchor = document.createElement('a');
+  cardUserProfileAnchor.href = obj.html_url;
+  cardUserProfileAnchor.textContent = obj.html_url;
+
+  const cardUserFollowersCount = document.createElement('p');
+  cardUserFollowersCount.textContent = `Followers: ${obj.followers}`;
+
+  const cardUserFollowingCount = document.createElement('p');
+  cardUserFollowingCount.textContent = `Following: ${obj.following}`;
+
+  const cardUserBio = document.createElement('p');
+  cardUserBio.textContent = `Bio: ${obj.bio}`;
+
+  
+  newCard.appendChild(cardImg);
+  newCard.appendChild(cardInfo);
+  cardInfo.appendChild(cardName);
+  cardInfo.appendChild(cardUsername);
+  cardInfo.appendChild(cardUserLocation);
+  cardInfo.appendChild(cardUserProfileDiv);
+  cardUserProfileDiv.appendChild(cardUserProfileAnchor);
+  cardInfo.appendChild(cardUserFollowersCount);
+  cardInfo.appendChild(cardUserFollowingCount);
+  cardInfo.appendChild(cardUserBio);
+
+  //return the card
+  return newCard;
+};
 /* List of LS Instructors Github username's: 
   tetondan
   dustinmyers
